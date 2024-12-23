@@ -1,0 +1,51 @@
+version: '3.0'
+
+services:
+  auth:
+      build:
+        context: .
+        dockerfile: ./apps/auth/Dockerfile
+        target: development
+      command: npm run start:dev users
+      env_file:
+        - ./apps/auth/.env
+      depends_on:
+        - db
+      volumes:
+        - .:/usr/src/app
+        - /usr/src/app/node_modules
+      ports:
+      - "4000:4000"
+
+  tutorial:
+      build:
+        context: .
+        dockerfile: ./apps/tutorial/Dockerfile
+        target: development
+      command: npm run start:dev users
+      env_file:
+        - ./apps/tutorial/.env
+      depends_on:
+        - db
+      volumes:
+        - .:/usr/src/app
+        - /usr/src/app/node_modules
+      ports:
+      - "4001:4001"
+
+
+
+  db:
+    container_name: pg_my_db
+    image: postgres:16.0
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=talkToILTS
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - '5492:5492'
+volumes:
+  postgres-data:
