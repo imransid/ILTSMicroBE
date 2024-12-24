@@ -3,6 +3,7 @@ import {
   BadRequestException,
   UnauthorizedException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service'; // Assuming you're using Prisma
 import { JwtService } from '@nestjs/jwt';
@@ -30,39 +31,38 @@ export class AuthService {
     const { email, password, firstName, lastName, mobileNumber, role } =
       registerInput;
 
-    // Check if the email is already in use
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-    if (existingUser) {
-      throw new BadRequestException('Email is already registered.');
+    try {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('Email is already registered.');
+      }
+
+      // Hash the password using bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Create the new user in the database
+      const user = await this.prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          firstName,
+          lastName,
+          mobileNumber,
+          role,
+        },
+      });
+
+      // Return the response
+      return {
+        message: user.firstName + '' + 'registered successfully.',
+      };
+    } catch (error) {
+      console.error('Error during registration:', error);
+      throw new InternalServerErrorException('Registration failed.');
     }
-
-    // Hash the password using bcrypt
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create the new user in the database
-    const user = await this.prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        mobileNumber,
-        role,
-      },
-    });
-
-    // Generate a JWT token
-    const token = this.jwtService.sign({ id: user.id });
-
-    // Set the token in a cookie for future authentication
-    res.cookie('authToken', token, { httpOnly: true, secure: true });
-
-    return {
-      message: 'User registered successfully.',
-      token,
-    };
   }
 
   /**
@@ -83,10 +83,15 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password.');
     }
 
-    // Generate JWT token with more secure payload (don't expose sensitive information)
+    // Check if approval status is false
+    if (!user.approveStatus) {
+      throw new UnauthorizedException('Approval is pending.');
+    }
+
+    // Generate JWT token with the secret from JwtService configuration
     const token = this.jwtService.sign(
       { id: user.id, email: user.email, role: user.role },
-      { expiresIn: '1h' }, // Optional: Set token expiration for enhanced security
+      { expiresIn: '1h' },
     );
 
     return {

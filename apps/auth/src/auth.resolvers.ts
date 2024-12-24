@@ -16,6 +16,11 @@ import { User } from './entities/user.entity';
 export class AuthResolver {
   constructor(private readonly authService: AuthService) {}
 
+  @Query(() => String)
+  async hello(): Promise<string> {
+    return 'Hello World!';
+  }
+
   @Mutation(() => RegisterResponse)
   async register(
     @Args('registerInput') registerInput: RegisterInput,
@@ -66,17 +71,6 @@ export class AuthResolver {
     } catch (error) {
       console.error('Update profile error:', error);
       throw new InternalServerErrorException('Profile update failed.');
-    }
-  }
-
-  @Query(() => [User])
-  @UseGuards(AuthGuard)
-  async getUsers(@Context() context: { req: any }): Promise<User[]> {
-    try {
-      return await this.authService.getUsers(context.req);
-    } catch (error) {
-      console.error('Get users error:', error);
-      throw new InternalServerErrorException('Failed to fetch users.');
     }
   }
 }

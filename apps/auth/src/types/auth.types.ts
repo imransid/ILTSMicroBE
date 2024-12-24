@@ -13,7 +13,4 @@ export class LoginResponse {
 export class RegisterResponse {
   @Field()
   message: string;
-
-  @Field()
-  token: string;
 }
