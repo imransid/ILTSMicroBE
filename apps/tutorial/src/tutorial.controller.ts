@@ -5,8 +5,8 @@ import { TutorialService } from './tutorial.service';
 export class TutorialController {
   constructor(private readonly tutorialService: TutorialService) {}
 
-  @Get()
-  getHello(): string {
-    return this.tutorialService.getHello();
-  }
+  // @Get()
+  // getHello(): string {
+  //   return this.tutorialService.getHello();
+  // }
 }

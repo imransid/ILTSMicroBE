@@ -33,6 +33,7 @@
     "@nestjs/microservices": "^10.4.15",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.4.15",
+    "@nestjs/platform-fastify": "^10.4.15",
     "@nestjs/serve-static": "^4.0.2",
     "@prisma/client": "^6.1.0",
     "@types/bcrypt": "^5.0.2",

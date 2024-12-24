@@ -5,26 +5,60 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../../prisma/prisma.service';
+import { GqlExecutionContext } from '@nestjs/graphql';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly prismaService: PrismaService,
+    private readonly configService: ConfigService,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
-    const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const gplContext = GqlExecutionContext.create(context);
 
-    if (!authHeader) {
-      throw new UnauthorizedException('No token provided.');
+    const { req } = gplContext.getContext();
+
+    const accessTokenWith = req.headers.authorization as string;
+
+    const accessToken = accessTokenWith.split(' ')[1];
+
+    if (!accessToken) {
+      throw new UnauthorizedException('Please login to access this resource.!');
     }
 
-    const token = authHeader.split(' ')[1];
+    if (accessToken) {
+      const decoded = this.jwtService.verify(accessToken, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid access token');
+      }
+
+      await this.updateAccessToken(req, decoded, accessToken);
+    }
+
+    return true;
+  }
+
+  private async updateAccessToken(
+    req: any,
+    decoded: any,
+    token: any,
+  ): Promise<void> {
     try {
-      const decoded = this.jwtService.verify(token);
-      request.user = decoded;
-      return true;
-    } catch (error) {
-      throw new UnauthorizedException('Invalid token.');
-    }
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: decoded.id,
+        },
+      });
+
+      req.accesstoken = token;
+      req.user = user;
+    } catch (error) {}
   }
 }
