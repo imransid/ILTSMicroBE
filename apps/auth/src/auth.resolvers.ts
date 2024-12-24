@@ -73,4 +73,16 @@ export class AuthResolver {
       throw new InternalServerErrorException('Profile update failed.');
     }
   }
+
+  // New query to get all users
+  @Query(() => [User])
+  @UseGuards(AuthGuard)
+  async getAllUsers(@Context() context: { req: any }): Promise<User[]> {
+    try {
+      return await this.authService.getUsers();
+    } catch (error) {
+      console.error('Get all users error:', error);
+      throw new InternalServerErrorException('Failed to fetch users.');
+    }
+  }
 }
