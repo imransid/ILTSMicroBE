@@ -17,9 +17,6 @@ export class Tutorial {
   @Field()
   description: string;
 
-  @Field()
-  date: Date;
-
   @Field(() => Int)
   like: number;
 

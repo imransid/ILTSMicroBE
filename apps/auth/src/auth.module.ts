@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'; // Ensure this imp
 import { JwtModule } from '@nestjs/jwt';
 import { AuthResolver } from './auth.resolvers';
 import { AuthService } from './auth.service';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
@@ -30,6 +31,23 @@ import { AuthService } from './auth.service';
       }),
       inject: [ConfigService], // Inject ConfigService into the factory function
     }),
+
+    // Kafka ClientsModule setup
+    ClientsModule.register([
+      {
+        name: 'any_name_i_want',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'any_client_id_i_want',
+            brokers: ['kafka:9092'],
+          },
+          consumer: {
+            groupId: 'an_unique_string_id',
+          },
+        },
+      },
+    ]),
   ],
   controllers: [AuthController],
   providers: [PrismaService, AuthResolver, AuthService],
