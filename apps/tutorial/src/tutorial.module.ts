@@ -38,6 +38,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      introspection: true,
       playground: true,
     }),
 
