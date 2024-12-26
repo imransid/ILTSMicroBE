@@ -9,6 +9,7 @@ RUN yarn install
 RUN npm rebuild bcrypt 
 
 
+
 COPY . .
 RUN npm run build
 FROM node:alpine as production
@@ -19,5 +20,6 @@ COPY package*.json ./
 RUN npm install --only=production
 COPY . .
 COPY --from=development /usr/src/app/dist ./dist
+
 CMD ["node", "dist/apps/tutorial/main"]
 

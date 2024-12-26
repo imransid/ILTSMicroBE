@@ -38,7 +38,7 @@ export class TutorialController implements OnModuleInit, OnModuleDestroy {
   @Get('kafka-test-with-response')
   testKafkaWithResponse() {
     return this.client.send('medium.rocks', {
-      foo: 'bar2334',
+      foo: 'bar23op34',
       data: new Date().toString(),
     });
   }

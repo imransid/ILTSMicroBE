@@ -18,6 +18,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: true,
+      introspection: true,
+      playground: true
     }),
 
     // JWT configuration using JwtModule.registerAsync
@@ -40,7 +42,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         options: {
           client: {
             clientId: 'any_client_id_i_want',
-            brokers: ['kafka:9092'],
+            brokers: ['kafka:9092'], //['localhost:29092'],
           },
           consumer: {
             groupId: 'an_unique_string_id',

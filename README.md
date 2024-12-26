@@ -36,3 +36,5 @@ my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├
 ## REF
 
 > > https://plainenglish.io/blog/a-beginners-introduction-to-kafka-with-typescript-using-nestjs-7c92fe78f638
+
+> > curl --location --request GET 'http://localhost:4001/kafka-test-with-response'
