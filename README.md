@@ -21,13 +21,13 @@ my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├
 
 ### DB PUSH
 
-> docker exec 22ecc30d3623 npx prisma generate
+> docker exec ae24cf98d184 npx prisma generate
 
-> docker exec 22ecc30d3623 npx prisma migrate deploy
+> docker exec ae24cf98d184 npx prisma migrate deploy
 
 ### migrate
 
-> docker exec 22ecc30d3623 npx prisma db push --force-reset
+> docker exec ae24cf98d184 npx prisma db push --force-reset
 
 ## UI for apeche kafka
 
@@ -38,3 +38,9 @@ my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├
 > > https://plainenglish.io/blog/a-beginners-introduction-to-kafka-with-typescript-using-nestjs-7c92fe78f638
 
 > > curl --location --request GET 'http://localhost:4001/kafka-test-with-response'
+
+> > create topic >> auth-validation
+
+
+
+docker exec fbc1273d1fda npx prisma db push --force-reset

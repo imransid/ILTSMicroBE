@@ -19,7 +19,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       driver: ApolloDriver,
       autoSchemaFile: true,
       introspection: true,
-      playground: true
+      playground: true,
     }),
 
     // JWT configuration using JwtModule.registerAsync

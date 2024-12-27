@@ -57,7 +57,7 @@ export class AuthService {
 
       // Return the response
       return {
-        message: user.firstName + '' + 'registered successfully.',
+        message: user.firstName + ' ' + 'registered successfully.',
       };
     } catch (error) {
       console.error('Error during registration:', error);
@@ -125,5 +125,15 @@ export class AuthService {
    */
   async getUsers(): Promise<any[]> {
     return this.prisma.user.findMany();
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found.`);
+    }
+
+    await this.prisma.user.delete({ where: { id } });
+    return true;
   }
 }

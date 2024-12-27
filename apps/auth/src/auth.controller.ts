@@ -7,6 +7,7 @@ import {
   MessagePattern,
   Payload,
 } from '@nestjs/microservices';
+import validateTokenFromTutorial from './Collaboration/kafkaConsumer';
 
 @Controller()
 export class AuthController {
@@ -22,5 +23,10 @@ export class AuthController {
       JSON.stringify(originalMessage.value);
     console.log(response);
     return response;
+  }
+
+  @MessagePattern('auth-validation')
+  checkAuthForTutorial(@Payload() message: any, @Ctx() context: KafkaContext) {
+    return validateTokenFromTutorial(message.token);
   }
 }

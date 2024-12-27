@@ -28,6 +28,7 @@ model Tutorial {
   videoUrl    String
   description String
   date        DateTime @default(now())
+  category    String
   like        Int
   dislike     Int
   createdAt   DateTime @default(now())

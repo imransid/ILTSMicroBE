@@ -6,7 +6,6 @@ import {
   OnModuleDestroy,
 } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
-import { TutorialService } from './tutorial.service';
 
 @Controller()
 export class TutorialController implements OnModuleInit, OnModuleDestroy {
@@ -16,7 +15,6 @@ export class TutorialController implements OnModuleInit, OnModuleDestroy {
   ) {}
 
   async onModuleInit() {
-    console.log('ok');
     ['medium.rocks'].forEach((key) =>
       this.client.subscribeToResponseOf(`${key}`),
     );
@@ -39,6 +37,14 @@ export class TutorialController implements OnModuleInit, OnModuleDestroy {
   testKafkaWithResponse() {
     return this.client.send('medium.rocks', {
       foo: 'bar23op34',
+      data: new Date().toString(),
+    });
+  }
+
+  @Get('kafka-test-auth')
+  authTestKafkaWithResponse() {
+    return this.client.send('medium.rocks', {
+      Token: 'i am rafa',
       data: new Date().toString(),
     });
   }

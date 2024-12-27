@@ -1,33 +1,22 @@
-import { Kafka } from 'kafkajs';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import * as jwt from 'jsonwebtoken';
 
-dotenv.config(); // Load the environment variables
+async function validateTokenFromTutorial(token: string): Promise<boolean> {
+  if (!token) {
+    console.error('No token provided');
+    return false; // Return false if no token is provided
+  }
 
-const kafka = new Kafka({
-  clientId: 'auth-service',
-  brokers: ['localhost:9093'],
-});
+  try {
+    // Remove "Bearer " if it exists
+    const withoutBearer = token.startsWith('Bearer ') ? token.slice(7) : token;
 
-const consumer = kafka.consumer({ groupId: 'auth-group' });
-
-async function validateTokenFromTutorial() {
-  await consumer.connect();
-  await consumer.subscribe({ topic: 'auth-validation', fromBeginning: true });
-
-  await consumer.run({
-    eachMessage: async ({ message }) => {
-      const token = message.value?.toString();
-      if (token) {
-        try {
-          const decoded = jwt.verify(token, process.env.JWT_SECRET as string); // Use the secret from the .env file
-          console.log('Token is valid:', decoded);
-        } catch (error) {
-          console.error('Invalid token:', error);
-        }
-      }
-    },
-  });
+    // Verify the token
+    jwt.verify(withoutBearer, process.env.JWT_SECRET as string);
+    return true; // Return true if the token is valid
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    return false; // Return false if verification fails
+  }
 }
 
-validateTokenFromTutorial();
+export default validateTokenFromTutorial;

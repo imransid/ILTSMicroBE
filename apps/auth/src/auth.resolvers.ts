@@ -1,4 +1,4 @@
-import { Resolver, Mutation, Args, Query, Context } from '@nestjs/graphql';
+import { Resolver, Mutation, Args, Query, Context, Int } from '@nestjs/graphql';
 import {
   BadRequestException,
   UseGuards,
@@ -83,6 +83,22 @@ export class AuthResolver {
     } catch (error) {
       console.error('Get all users error:', error);
       throw new InternalServerErrorException('Failed to fetch users.');
+    }
+  }
+
+  // Mutation to delete a user by ID
+  @Mutation(() => Boolean)
+  @UseGuards(AuthGuard)
+  async deleteUser(
+    @Args('id', { type: () => Int }) id: number,
+    @Context() context: { req: any },
+  ): Promise<boolean> {
+    try {
+      const result = await this.authService.deleteUser(id);
+      return result; // Assuming the service returns `true` if successful
+    } catch (error) {
+      console.error('Delete user error:', error);
+      throw new InternalServerErrorException('Failed to delete user.');
     }
   }
 }

@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsString, IsInt, IsOptional, IsUrl } from 'class-validator';
+import { IsString, IsInt, IsOptional } from 'class-validator';
 
 @InputType()
 export class CreateTutorialInput {
@@ -12,8 +12,12 @@ export class CreateTutorialInput {
   image: string;
 
   @Field()
-  @IsUrl()
+  @IsString()
   videoUrl: string;
+
+  @Field()
+  @IsString()
+  category: string;
 
   @Field()
   @IsString()
@@ -21,11 +25,11 @@ export class CreateTutorialInput {
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsInt()
+  @IsInt() // Use @IsInt for integer values
   like?: number;
 
   @Field({ nullable: true })
   @IsOptional()
-  @IsInt()
+  @IsInt() // Use @IsInt for integer values
   dislike?: number;
 }

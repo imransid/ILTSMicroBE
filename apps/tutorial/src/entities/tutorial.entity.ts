@@ -15,6 +15,9 @@ export class Tutorial {
   videoUrl: string;
 
   @Field()
+  category: string;
+
+  @Field()
   description: string;
 
   @Field(() => Int)
