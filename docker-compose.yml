@@ -1,42 +1,69 @@
-version: '2'
+version: '3.8'
+
 services:
   zookeeper:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
     ports:
-      - 22181:2181
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - nest-microservices-network
 
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '9092:9092'
+      - '9093:9093'
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
-    ports:
-      - 29092:29092
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,
-        PLAINTEXT_HOST://host.docker.internal:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT, PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - nest-microservices-network
 
-  kafka_ui:
-    image: provectuslabs/kafka-ui:latest
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    ports:
+      - '8081:8081'
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - SERVER_PORT=8081
     depends_on:
       - kafka
+    restart: always
+    networks:
+      - nest-microservices-network
+
+  db:
+    container_name: pg_my_db
+    image: postgres:16.0
     ports:
-      - 8080:8080
+      - '5432:5432'
     environment:
-      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
-      KAFKA_CLUSTERS_0_NAME: local
-      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=talkToILTS
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - nest-microservices-network
+
   auth:
     build:
       context: .
       dockerfile: ./apps/auth/Dockerfile
+    container_name: auth_service
     command: npm run start:dev auth
     depends_on:
       - db
@@ -45,11 +72,14 @@ services:
       - /usr/src/app/node_modules
     ports:
       - '4000:4000'
+    networks:
+      - nest-microservices-network
 
   tutorial:
     build:
       context: .
       dockerfile: ./apps/tutorial/Dockerfile
+    container_name: tutorial_service
     command: npm run start:dev tutorial
     depends_on:
       - db
@@ -58,22 +88,13 @@ services:
       - /usr/src/app/node_modules
     ports:
       - '4001:4001'
-
-  db:
-    container_name: pg_my_db
-    image: postgres:16.0
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=talkToILTS
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    ports:
-      - '5432:5432'
+    networks:
+      - nest-microservices-network
 
 volumes:
   postgres-data:
 
 networks:
-  default:
+  nest-microservices-network:
     name: nest-microservices-network
+    driver: bridge
