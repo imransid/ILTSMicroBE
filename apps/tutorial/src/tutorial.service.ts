@@ -28,6 +28,7 @@ export class TutorialService {
         videoUrl: videoUrl,
         like: createTutorialInput.like ?? 0, // Set like to 0 if not provided
         dislike: createTutorialInput.dislike ?? 0, // Set dislike to 0 if not provided
+        category: createTutorialInput.category, // Include category explicitly
       },
     });
   }

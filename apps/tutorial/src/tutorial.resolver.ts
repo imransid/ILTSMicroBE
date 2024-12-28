@@ -84,8 +84,6 @@ export class TutorialResolver implements OnModuleInit, OnModuleDestroy {
       throw new UnauthorizedException('Authorization token is missing');
     }
 
-    console.log('Authorization Header:', authHeader);
-
     try {
       // Send the token to Kafka for validation
       const validToken = await this.client
