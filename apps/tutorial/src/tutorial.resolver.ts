@@ -14,22 +14,23 @@ import {
 import { ClientKafka } from '@nestjs/microservices';
 
 @Resolver(() => Tutorial)
-export class TutorialResolver implements OnModuleInit, OnModuleDestroy {
+// export class TutorialResolver implements OnModuleInit, OnModuleDestroy {
+export class TutorialResolver {
   constructor(
     private readonly tutorialService: TutorialService,
-    @Inject('any_client_id_i_want') private readonly client: ClientKafka,
+    // @Inject('any_client_id_i_want') private readonly client: ClientKafka,
   ) {}
 
-  async onModuleInit() {
-    ['auth-validation'].forEach((key) =>
-      this.client.subscribeToResponseOf(`${key}`),
-    );
-    await this.client.connect();
-  }
+  // async onModuleInit() {
+  //   ['auth-validation'].forEach((key) =>
+  //     this.client.subscribeToResponseOf(`${key}`),
+  //   );
+  //   await this.client.connect();
+  // }
 
-  async onModuleDestroy() {
-    await this.client.close();
-  }
+  // async onModuleDestroy() {
+  //   await this.client.close();
+  // }
 
   @Mutation(() => Tutorial)
   async createTutorial(
@@ -44,17 +45,17 @@ export class TutorialResolver implements OnModuleInit, OnModuleDestroy {
 
     try {
       // Send token to Kafka for validation
-      const isValidToken = await this.client
-        .send('auth-validation', {
-          token: authHeader,
-          timestamp: new Date().toISOString(),
-        })
-        .toPromise();
+      // const isValidToken = await this.client
+      //   .send('auth-validation', {
+      //     token: authHeader,
+      //     timestamp: new Date().toISOString(),
+      //   })
+      //   .toPromise();
 
-      // Check if token is valid
-      if (!isValidToken) {
-        throw new UnauthorizedException('Invalid or expired token.');
-      }
+      // // Check if token is valid
+      // if (!isValidToken) {
+      //   throw new UnauthorizedException('Invalid or expired token.');
+      // }
 
       // Proceed with creating the tutorial
       return await this.tutorialService.create(createTutorialInput);
@@ -84,26 +85,26 @@ export class TutorialResolver implements OnModuleInit, OnModuleDestroy {
       throw new UnauthorizedException('Authorization token is missing');
     }
 
-    try {
-      // Send the token to Kafka for validation
-      const validToken = await this.client
-        .send('auth-validation', {
-          token: authHeader,
-          timestamp: new Date().toISOString(),
-        })
-        .toPromise();
+    // try {
+    // Send the token to Kafka for validation
+    // const validToken = await this.client
+    //   .send('auth-validation', {
+    //     token: authHeader,
+    //     timestamp: new Date().toISOString(),
+    //   })
+    //   .toPromise();
 
-      if (!validToken) {
-        throw new UnauthorizedException('Invalid or expired token');
-      }
+    // if (!validToken) {
+    //   throw new UnauthorizedException('Invalid or expired token');
+    // }
 
-      console.log('Token validated successfully:', validToken);
-    } catch (error) {
-      console.error('Error during token validation or Kafka message:', error);
-      throw new InternalServerErrorException(
-        'An error occurred while validating the token or communicating with Kafka.',
-      );
-    }
+    // console.log('Token validated successfully:', validToken);
+    // } catch (error) {
+    // console.error('Error during token validation or Kafka message:', error);
+    // throw new InternalServerErrorException(
+    //   'An error occurred while validating the token or communicating with Kafka.',
+    // );
+    //}
 
     // Proceed to retrieve tutorials if the token is valid
     try {

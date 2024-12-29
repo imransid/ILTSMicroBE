@@ -102,56 +102,56 @@
 version: '3.8'
 
 services:
-  zookeeper:
-    image: 'bitnami/zookeeper:latest'
-    container_name: zookeeper_service
-    ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    volumes:
-      - zookeeper-data:/bitnami/zookeeper
-    networks:
-      - nest-microservices-network
-    restart: unless-stopped
+  # zookeeper:
+  #   image: 'bitnami/zookeeper:latest'
+  #   container_name: zookeeper_service
+  #   ports:
+  #     - '2181:2181'
+  #   environment:
+  #     - ALLOW_ANONYMOUS_LOGIN=yes
+  #   volumes:
+  #     - zookeeper-data:/bitnami/zookeeper
+  #   networks:
+  #     - nest-microservices-network
+  #   restart: unless-stopped
 
-  kafka:
-    image: 'bitnami/kafka:latest'
-    container_name: kafka_service
-    ports:
-      - '9092:9092'
-      - '9093:9093'
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka_service:9092,EXTERNAL://localhost:9093
-      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_HEAP_OPTS="-Xmx1G -Xms512M"
-    depends_on:
-      - zookeeper
-    volumes:
-      - kafka-data:/bitnami/kafka
-    networks:
-      - nest-microservices-network
-    restart: unless-stopped
+  # kafka:
+  #   image: 'bitnami/kafka:latest'
+  #   container_name: kafka_service
+  #   ports:
+  #     - '9092:9092'
+  #     - '9093:9093'
+  #   environment:
+  #     - KAFKA_BROKER_ID=1
+  #     - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+  #     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+  #     - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka_service:9092,EXTERNAL://localhost:9093
+  #     - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #     - KAFKA_HEAP_OPTS="-Xmx1G -Xms512M"
+  #   depends_on:
+  #     - zookeeper
+  #   volumes:
+  #     - kafka-data:/bitnami/kafka
+  #   networks:
+  #     - nest-microservices-network
+  #   restart: unless-stopped
 
-  kafka-ui:
-    image: provectuslabs/kafka-ui
-    container_name: kafka_ui_service
-    ports:
-      - '8081:8081'
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_service:9092
-      - SERVER_PORT=8081
-    depends_on:
-      - kafka
-    restart: always
-    networks:
-      - nest-microservices-network
+  # kafka-ui:
+  #   image: provectuslabs/kafka-ui
+  #   container_name: kafka_ui_service
+  #   ports:
+  #     - '8081:8081'
+  #   environment:
+  #     - KAFKA_CLUSTERS_0_NAME=local
+  #     - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka_service:9092
+  #     - SERVER_PORT=8081
+  #   depends_on:
+  #     - kafka
+  #   restart: always
+  #   networks:
+  #     - nest-microservices-network
 
   db:
     container_name: postgres_service

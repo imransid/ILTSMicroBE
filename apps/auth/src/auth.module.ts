@@ -34,22 +34,22 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       inject: [ConfigService], // Inject ConfigService into the factory function
     }),
 
-    // Kafka ClientsModule setup
-    ClientsModule.register([
-      {
-        name: 'any_name_i_want',
-        transport: Transport.KAFKA,
-        options: {
-          client: {
-            clientId: 'any_client_id_i_want',
-            brokers: ['kafka:9092'], //['localhost:29092'],
-          },
-          consumer: {
-            groupId: 'an_unique_string_id',
-          },
-        },
-      },
-    ]),
+    // //  Kafka ClientsModule setup
+    // ClientsModule.register([
+    //   {
+    //     name: 'any_name_i_want',
+    //     transport: Transport.KAFKA,
+    //     options: {
+    //       client: {
+    //         clientId: 'any_client_id_i_want',
+    //         brokers: ['kafka:9092'], //['localhost:29092'],
+    //       },
+    //       consumer: {
+    //         groupId: 'an_unique_string_id',
+    //       },
+    //     },
+    //   },
+    // ]),
   ],
   controllers: [AuthController],
   providers: [PrismaService, AuthResolver, AuthService],
