@@ -15,18 +15,18 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('medium.rocks')
-  readMessage(@Payload() message: any, @Ctx() context: KafkaContext) {
-    const originalMessage = context.getMessage();
-    const response =
-      `Receiving a new message from topic: medium.rocks: ` +
-      JSON.stringify(originalMessage.value);
-    console.log(response);
-    return response;
-  }
+  // @MessagePattern('medium.rocks')
+  // readMessage(@Payload() message: any, @Ctx() context: KafkaContext) {
+  //   const originalMessage = context.getMessage();
+  //   const response =
+  //     `Receiving a new message from topic: medium.rocks: ` +
+  //     JSON.stringify(originalMessage.value);
+  //   console.log(response);
+  //   return response;
+  // }
 
-  @MessagePattern('auth-validation')
-  checkAuthForTutorial(@Payload() message: any, @Ctx() context: KafkaContext) {
-    return validateTokenFromTutorial(message.token);
-  }
+  // @MessagePattern('auth-validation')
+  // checkAuthForTutorial(@Payload() message: any, @Ctx() context: KafkaContext) {
+  //   return validateTokenFromTutorial(message.token);
+  // }
 }
