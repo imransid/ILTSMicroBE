@@ -22,21 +22,21 @@ import { v4 as uuidv4 } from 'uuid';
     }),
 
     // Kafka client setup
-    //ClientsModule.register([
-    // {
-    //   name: 'any_client_id_i_want',
-    //   transport: Transport.KAFKA,
-    //   options: {
-    //     client: {
-    //       clientId: uuidv4(),
-    //       brokers: ['kafka:9092'], //['localhost:29092'],
-    //     },
-    //     consumer: {
-    //       groupId: 'an_unique_string_id',
-    //     },
-    //   },
-    // },
-    // ]),
+    ClientsModule.register([
+      {
+        name: 'any_client_id_i_want',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: uuidv4(),
+            brokers: ['kafka:9092'], //['localhost:29092'],
+          },
+          consumer: {
+            groupId: 'an_unique_string_id',
+          },
+        },
+      },
+    ]),
   ],
   controllers: [TutorialController],
   providers: [PrismaService, TutorialResolver, TutorialService],
