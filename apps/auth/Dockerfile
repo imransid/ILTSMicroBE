@@ -4,7 +4,7 @@ RUN apk add --no-cache openssl
 COPY prisma ./prisma/
 RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY package*.json ./
-RUN yarn install
+RUN  yarn install
 # RUN yarn add bcrypt
 RUN npm rebuild bcrypt 
 
@@ -20,7 +20,5 @@ RUN npm install --only=production
 COPY . .
 COPY --from=development /usr/src/app/dist ./dist
 CMD ["node", "dist/apps/tutorial/main"]
-
-
 
 
