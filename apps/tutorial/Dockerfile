@@ -4,9 +4,9 @@ RUN apk add --no-cache openssl
 COPY prisma ./prisma/
 RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY package*.json ./
-RUN yarn global add @nestjs/cli && yarn install
+RUN yarn cache clean && yarn install
 # RUN yarn add bcrypt
-RUN npm rebuild bcrypt 
+#RUN npm rebuild bcrypt 
 
 
 

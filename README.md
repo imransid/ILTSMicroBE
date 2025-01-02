@@ -41,6 +41,11 @@ my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├
 
 > > create topic >> auth-validation
 
-
-
 docker exec fbc1273d1fda npx prisma db push --force-reset
+
+<!-- Add SWAP MEMORY -->
+
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
