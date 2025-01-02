@@ -4,7 +4,39 @@ This project demonstrates a microservices architecture built with **NestJS** and
 
 ## Project Structure
 
-my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├── src/ │ │ │ ├── app.controller.ts │ │ │ ├── app.module.ts │ │ │ ├── auth/ │ │ │ │ ├── auth.controller.ts │ │ │ │ ├── auth.service.ts │ │ │ │ └── auth.module.ts │ │ │ └── main.ts │ │ ├── package.json │ │ └── tsconfig.json │ │ │ └── tutorialService/ │ ├── src/ │ │ ├── app.controller.ts │ │ ├── app.module.ts │ │ ├── tutorial/ │ │ │ ├── tutorial.controller.ts │ │ │ ├── tutorial.service.ts │ │ │ └── tutorial.module.ts │ │ └── main.ts │ ├── package.json │ └── tsconfig.json │ ├── middleware/ │ ├── logging.middleware.ts │ └── auth.middleware.ts │ ├── prisma/ │ ├── schema.prisma │ ├── migrations/ │ └── prisma.service.ts │ ├── nest-cli.json ├── docker-compose.yml ├── package.json └── tsconfig.json
+my-microservices-app/
+│
+├── proto/ # Shared proto definitions
+│ ├── auth.proto
+│ └── tutorial.proto
+│
+├── apps/
+│ ├── authService/
+│ │ ├── src/
+│ │ │ ├── app.controller.ts
+│ │ │ ├── app.module.ts
+│ │ │ ├── auth/
+│ │ │ │ ├── auth.controller.ts
+│ │ │ │ ├── auth.service.ts
+│ │ │ │ └── auth.module.ts
+│ │ │ └── main.ts
+│ │ ├── package.json
+│ │ └── Dockerfile
+│ │
+│ ├── tutorialService/
+│ │ ├── src/
+│ │ │ ├── app.controller.ts
+│ │ │ ├── app.module.ts
+│ │ │ ├── tutorial/
+│ │ │ │ ├── tutorial.controller.ts
+│ │ │ │ ├── tutorial.service.ts
+│ │ │ │ └── tutorial.module.ts
+│ │ │ └── main.ts
+│ │ ├── package.json
+│ │ └── Dockerfile
+│
+├── docker-compose.yml # Docker services orchestration
+└── package.json # Root dependencies
 
 # First Step is
 
@@ -21,13 +53,13 @@ my-microservices-app/ │ ├── apps/ │ ├── authService/ │ │ ├
 
 ### DB PUSH
 
-> docker exec ae24cf98d184 npx prisma generate
+> sudo docker exec 762fd3b5a685 npx prisma generate
 
-> docker exec ae24cf98d184 npx prisma migrate deploy
+> sudo docker exec 762fd3b5a685 npx prisma migrate deploy
 
 ### migrate
 
-> docker exec ae24cf98d184 npx prisma db push --force-reset
+> sudo docker exec 762fd3b5a685 npx prisma db push --force-reset
 
 ## UI for apeche kafka
 
