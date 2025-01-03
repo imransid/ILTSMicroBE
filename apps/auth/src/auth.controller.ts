@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import {
   ClientKafka,
   Ctx,
+  GrpcMethod,
   KafkaContext,
   MessagePattern,
   Payload,
@@ -15,18 +16,21 @@ export class AuthController {
 
   constructor(private readonly authService: AuthService) {}
 
-  @MessagePattern('medium.rocks')
-  readMessage(@Payload() message: any, @Ctx() context: KafkaContext) {
-    const originalMessage = context.getMessage();
-    const response =
-      `Receiving a new message from topic: medium.rocks: ` +
-      JSON.stringify(originalMessage.value);
-    console.log(response);
-    return response;
-  }
+  @GrpcMethod('AuthService', 'validateToken')
+  validateToken(data: { token: string }) {
+    const { token } = data;
 
-  @MessagePattern('auth-validation')
-  checkAuthForTutorial(@Payload() message: any, @Ctx() context: KafkaContext) {
-    return validateTokenFromTutorial(message.token);
+    // Here you would validate the token (for example, check if it's valid in the database or via another service)
+    if (!token) {
+      return {
+        isValid: false,
+      };
+    }
+
+    // For demonstration purposes, assume token is valid
+    // You can replace this with actual token validation logic
+    const isValid = token === 'valid-token'; // Example logic
+
+    return { isValid };
   }
 }

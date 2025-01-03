@@ -23,6 +23,8 @@
     "@apollo/gateway": "^2.9.3",
     "@apollo/server": "^4.11.2",
     "@apollo/subgraph": "^2.9.3",
+    "@grpc/grpc-js": "^1.12.5",
+    "@grpc/proto-loader": "^0.7.13",
     "@nestjs/apollo": "^12.2.2",
     "@nestjs/common": "^10.4.15",
     "@nestjs/config": "^3.3.0",

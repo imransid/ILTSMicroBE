@@ -5,6 +5,7 @@ COPY prisma ./prisma/
 RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY package*.json ./
 RUN yarn cache clean && yarn install
+#RUN yarn add @grpc/grpc-js @nestjs/microservices
 # RUN yarn add bcrypt
 #RUN npm rebuild bcrypt 
 

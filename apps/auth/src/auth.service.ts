@@ -10,6 +10,15 @@ import { JwtService } from '@nestjs/jwt';
 import { RegisterInput } from './dto/register.input';
 import { LoginResponse, RegisterResponse } from './types/auth.types';
 import * as bcrypt from 'bcryptjs';
+import { GrpcMethod } from '@nestjs/microservices';
+
+interface MessageRequest {
+  message: string;
+}
+
+interface MessageResponse {
+  status: string;
+}
 
 @Injectable()
 export class AuthService {
@@ -17,6 +26,18 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
+
+  @GrpcMethod('AuthService', 'ValidateToken')
+  validateToken(data: { token: string }): { isValid: boolean; userId: string } {
+    const isValid = data.token === 'valid-token'; // Example token validation logic
+    return { isValid, userId: isValid ? 'user123' : '' };
+  }
+
+  @GrpcMethod('MessageService', 'SendMessage')
+  sendMessage(data: MessageRequest): MessageResponse {
+    console.log('Message received:', data.message);
+    return { status: 'Message sent successfully' };
+  }
 
   /**
    * Register a new user in the system.

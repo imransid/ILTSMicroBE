@@ -5,9 +5,11 @@ import { PrismaService } from '../../../prisma/prisma.service';
 import { ConfigModule } from '@nestjs/config';
 import { TutorialController } from './tutorial.controller';
 import { TutorialService } from './tutorial.service';
+import { TokenValidationService } from './TokenValidationService.service';
 import { TutorialResolver } from './tutorial.resolver';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
+import { join } from 'path';
 @Module({
   imports: [
     // Load environment variables from .env file
@@ -21,24 +23,24 @@ import { v4 as uuidv4 } from 'uuid';
       playground: true,
     }),
 
-    // Kafka client setup
     ClientsModule.register([
       {
-        name: 'any_client_id_i_want',
-        transport: Transport.KAFKA,
+        name: 'USERPROTO_PACKAGE',
+        transport: Transport.GRPC,
         options: {
-          client: {
-            clientId: uuidv4(),
-            brokers: ['kafka:9092'], //['localhost:29092'],
-          },
-          consumer: {
-            groupId: 'an_unique_string_id',
-          },
+          url: 'auth_service:50052',
+          package: 'userproto',
+          protoPath: join(__dirname, '../../../proto/message.proto'),
         },
       },
     ]),
   ],
   controllers: [TutorialController],
-  providers: [PrismaService, TutorialResolver, TutorialService],
+  providers: [
+    PrismaService,
+    TutorialResolver,
+    TutorialService,
+    TokenValidationService,
+  ],
 })
 export class TutorialModule {}

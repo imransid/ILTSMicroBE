@@ -1,24 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
+import path, { join } from 'path';
 
 async function bootstrap() {
-  // // Create Kafka microservice
-  const microservice =
-    await NestFactory.createMicroservice<MicroserviceOptions>(AuthModule, {
-      transport: Transport.KAFKA,
-      options: {
-        client: {
-          brokers: ['kafka:9092'], //['kafka:9092'],
-        },
-      },
-    });
+  const app = await NestFactory.create(AuthModule);
 
-  // Start Kafka microservice
-  await microservice.listen();
+  app.connectMicroservice<MicroserviceOptions>({
+    transport: Transport.GRPC,
+    options: {
+      url: 'auth_service:50052',
+      package: 'userproto',
+      protoPath: join(__dirname, '../../../proto/message.proto'),
+    },
+  });
 
-  // Create and start HTTP service on port 4000
-  const httpApp = await NestFactory.create(AuthModule);
-  await httpApp.listen(4000);
+  await app.startAllMicroservices();
+  await app.listen(4000);
 }
 bootstrap();

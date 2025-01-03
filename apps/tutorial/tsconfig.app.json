@@ -4,6 +4,6 @@
     "declaration": false,
     "outDir": "../../dist/apps/tutorial"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*" , "proto"],
   "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }
