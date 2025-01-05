@@ -74,12 +74,25 @@ export class AuthResolver {
     }
   }
 
-  // New query to get all users
+  // New query to get a users
   @Query(() => [User])
   @UseGuards(AuthGuard)
   async getAllUsers(@Context() context: { req: any }): Promise<User[]> {
     try {
+      const userId = context.req.user.id;
       return await this.authService.getUsers();
+    } catch (error) {
+      console.error('Get all users error:', error);
+      throw new InternalServerErrorException('Failed to fetch users.');
+    }
+  }
+
+  @Query(() => [User])
+  @UseGuards(AuthGuard)
+  async getAUser(@Context() context: { req: any }): Promise<User> {
+    try {
+      const userId = context.req.user.id;
+      return await this.authService.getAUser(userId);
     } catch (error) {
       console.error('Get all users error:', error);
       throw new InternalServerErrorException('Failed to fetch users.');

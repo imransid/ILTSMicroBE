@@ -29,6 +29,8 @@
 FROM node:20 As development
 
 WORKDIR /usr/src/app
+RUN apt-get update && apt-get install -y openssl
+
 
 COPY package*.json yarn.lock./
 
@@ -42,13 +44,8 @@ RUN npx prisma generate
 
 RUN yarn build
 
-#CMD ["yarn",  "start:dev"]
 
-#RUN yarn add @grpc/grpc-js @nestjs/microservices
-# RUN yarn add bcrypt
-# RUN npm rebuild bcrypt 
-
-FROM node:alpine as production
+FROM node:20 as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

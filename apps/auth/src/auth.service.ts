@@ -157,4 +157,10 @@ export class AuthService {
     await this.prisma.user.delete({ where: { id } });
     return true;
   }
+
+  async getAUser(userId: number) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    return user;
+  }
+
 }
