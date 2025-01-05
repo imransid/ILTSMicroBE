@@ -18,6 +18,9 @@ export class User {
   mobileNumber: string;
 
   @Field()
+  approveStatus: string;
+
+  @Field()
   role: string;
 
   @Field()
