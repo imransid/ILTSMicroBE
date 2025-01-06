@@ -53,13 +53,13 @@ my-microservices-app/
 
 ### DB PUSH
 
-> sudo docker exec 2a1df8dde27f npx prisma generate
+> sudo docker exec d8580dfd6b96 npx prisma generate
 
-> sudo docker exec 2a1df8dde27f npx prisma migrate deploy
+> sudo docker exec d8580dfd6b96 npx prisma migrate deploy
 
 ### migrate
 
-> sudo docker exec 2a1df8dde27f npx prisma db push --force-reset
+> sudo docker exec d8580dfd6b96 npx prisma db push --force-reset
 
 ## UI for apeche kafka
 
