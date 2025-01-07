@@ -11,6 +11,7 @@ import { RegisterInput } from './dto/register.input';
 import { LoginResponse, RegisterResponse } from './types/auth.types';
 import * as bcrypt from 'bcryptjs';
 import { GrpcMethod } from '@nestjs/microservices';
+import { User } from '@prisma/client';
 
 interface MessageRequest {
   message: string;
@@ -150,6 +151,8 @@ export class AuthService {
 
   async deleteUser(id: number): Promise<boolean> {
     const user = await this.prisma.user.findUnique({ where: { id } });
+
+    console.log('user', user);
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found.`);
     }
@@ -161,5 +164,18 @@ export class AuthService {
   async getAUser(userId: number): Promise<any> {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     return user;
+  }
+
+  async updateApprovalStatus(id: number, approveStatus: boolean): Promise<any> {
+    // Find and update the user by their ID using Prisma
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: {
+        approveStatus, // Update the approveStatus field
+        updatedAt: new Date(), // Optionally, update the timestamp
+      },
+    });
+
+    return updatedUser; // Return the updated user
   }
 }

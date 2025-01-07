@@ -94,8 +94,6 @@ export class AuthResolver {
       const userId = context.req.user.id;
       let user = await this.authService.getAUser(userId);
 
-      console.log('user', user);
-
       return user;
     } catch (error) {
       console.error('Get all users error:', error);
@@ -104,18 +102,46 @@ export class AuthResolver {
   }
 
   // Mutation to delete a user by ID
-  @Mutation(() => Boolean)
+  @Mutation(() => String)
   @UseGuards(AuthGuard)
   async deleteUser(
     @Args('id', { type: () => Int }) id: number,
     @Context() context: { req: any },
-  ): Promise<boolean> {
+  ): Promise<string> {
     try {
       const result = await this.authService.deleteUser(id);
-      return result; // Assuming the service returns `true` if successful
+      return result ? 'delete successfully' : 'delete failed'; // Assuming the service returns `true` if successful
     } catch (error) {
       console.error('Delete user error:', error);
       throw new InternalServerErrorException('Failed to delete user.');
+    }
+  }
+
+  @Mutation(() => User)
+  @UseGuards(AuthGuard)
+  async updateUserApprovalStatus(
+    @Args('id', { type: () => Int }) id: number, // User ID to update
+    @Args('approveStatus', { type: () => Boolean }) approveStatus: boolean, // New approval status
+    @Context() context: { req: any }, // Context to extract the logged-in user
+  ): Promise<User> {
+    try {
+      // Ensure the authenticated user has the necessary permissions
+      // const userId = context.req.user.id;
+      // const role = context.req.user.role;
+
+      // if (role !== 'admin') {
+      //   throw new BadRequestException(
+      //     'You are not authorized to update approval status.',
+      //   );
+      // }
+
+      // Call the service to update the user's approval status
+      return await this.authService.updateApprovalStatus(id, approveStatus);
+    } catch (error) {
+      console.error('Update approval status error:', error);
+      throw new InternalServerErrorException(
+        'Failed to update approval status.',
+      );
     }
   }
 }
