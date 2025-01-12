@@ -28,4 +28,7 @@ export class User {
 
   @Field()
   updatedAt: Date;
+
+  @Field()
+  deviceID: string;
 }

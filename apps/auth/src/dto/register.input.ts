@@ -18,5 +18,8 @@ export class RegisterInput {
   mobileNumber: string;
 
   @Field()
+  deviceID: string;
+
+  @Field()
   role: string;
 }

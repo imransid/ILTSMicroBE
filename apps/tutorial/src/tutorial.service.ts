@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
 import { CreateTutorialInput } from './dto/create-tutorial.input';
 import { UpdateTutorialInput } from './dto/update-tutorial.input';
+import * as fs from 'fs';
+import * as path from 'path';
+import { promisify } from 'util';
 
 @Injectable()
 export class TutorialService {
@@ -20,11 +23,36 @@ export class TutorialService {
   }
 
   async create(createTutorialInput: CreateTutorialInput) {
-    let videoUrl = this.convertToDownloadUrl(createTutorialInput.videoUrl);
+    let videoUrl = '';
+    let filename = '';
+    if (createTutorialInput.mediaType === 'drive') {
+      videoUrl = this.convertToDownloadUrl(createTutorialInput.videoUrl);
+    }
+
+    if (
+      createTutorialInput.mediaType === 'video' ||
+      createTutorialInput.mediaType === 'audio' ||
+      createTutorialInput.mediaType === 'image'
+    ) {
+      filename;
+
+      const images = Array.isArray(createTutorialInput.images)
+        ? createTutorialInput.images
+        : [createTutorialInput.images];
+
+      // Process each image (you can process each individually if needed)
+      const filePaths = await Promise.all(
+        images.map((file: any) => this.processUpload(file)),
+      );
+      filename = filePaths[0];
+    }
+
+    const { images, ...tutorialData } = createTutorialInput;
 
     return this.prisma.tutorial.create({
       data: {
-        ...createTutorialInput,
+        ...tutorialData,
+        filename: filename,
         videoUrl: videoUrl,
         like: createTutorialInput.like ?? 0, // Set like to 0 if not provided
         dislike: createTutorialInput.dislike ?? 0, // Set dislike to 0 if not provided
@@ -68,5 +96,46 @@ export class TutorialService {
     return this.prisma.tutorial.delete({
       where: { id },
     });
+  }
+
+  async processUpload(file: any): Promise<string> {
+    // If file is a promise, resolve it
+    const resolvedFile = await file;
+
+    // Validate if the file object is properly structured
+    if (
+      !resolvedFile ||
+      !resolvedFile.createReadStream ||
+      !resolvedFile.filename
+    ) {
+      throw new Error('File upload is invalid or missing required fields.');
+    }
+
+    // Destructure the file object
+    const { createReadStream, filename, mimetype } = resolvedFile;
+    const uploadDir = path.join(__dirname, './', 'uploads'); // Ensure this path is correct
+
+    // Create the directory if it doesn't exist
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+    }
+
+    // Define the full path where the file will be saved
+    const filePath = path.join(uploadDir, filename);
+
+    // Create a writable stream to save the file
+    const writeStream = fs.createWriteStream(filePath);
+
+    // Handle the stream piping and wait for it to complete
+    const stream = createReadStream();
+    stream.pipe(writeStream); // Pipe the read stream directly into the write stream
+
+    // Use a promise to wait until the write stream finishes
+    await new Promise((resolve, reject) => {
+      writeStream.on('finish', resolve); // Resolve when the writing is done
+      writeStream.on('error', reject); // Reject if an error occurs during writing
+    });
+
+    return filename; // Return the file path where it was saved
   }
 }

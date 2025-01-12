@@ -3,6 +3,7 @@ import {
   BadRequestException,
   UseGuards,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -33,7 +34,8 @@ export class AuthResolver {
         !registerInput.firstName ||
         !registerInput.lastName ||
         !registerInput.mobileNumber ||
-        !registerInput.role
+        !registerInput.role ||
+        !registerInput.deviceID
       ) {
         throw new BadRequestException('All fields are required.');
       }
@@ -52,10 +54,20 @@ export class AuthResolver {
       return await this.authService.login(
         loginInput.email,
         loginInput.password,
+        loginInput.deviceID,
       );
     } catch (error) {
       console.error('Login error:', error);
-      throw new InternalServerErrorException('Login failed.');
+
+      // Handle known errors based on their type or message
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message); // Re-throw the specific unauthorized message
+      }
+
+      // Handle other unexpected errors
+      throw new InternalServerErrorException(
+        'An unexpected error occurred. Please try again later.',
+      );
     }
   }
 
@@ -69,8 +81,17 @@ export class AuthResolver {
       const userId = context.req.user.id;
       return await this.authService.updateProfile(userId, updateProfileInput);
     } catch (error) {
-      console.error('Update profile error:', error);
-      throw new InternalServerErrorException('Profile update failed.');
+      console.error('Login error:', error);
+
+      // Handle known errors based on their type or message
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message); // Re-throw the specific unauthorized message
+      }
+
+      // Handle other unexpected errors
+      throw new InternalServerErrorException(
+        'An unexpected error occurred. Please try again later.',
+      );
     }
   }
 
@@ -82,8 +103,17 @@ export class AuthResolver {
       const userId = context.req.user.id;
       return await this.authService.getUsers();
     } catch (error) {
-      console.error('Get all users error:', error);
-      throw new InternalServerErrorException('Failed to fetch users.');
+      console.error('Login error:', error);
+
+      // Handle known errors based on their type or message
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message); // Re-throw the specific unauthorized message
+      }
+
+      // Handle other unexpected errors
+      throw new InternalServerErrorException(
+        'An unexpected error occurred. Please try again later.',
+      );
     }
   }
 
@@ -96,8 +126,17 @@ export class AuthResolver {
 
       return user;
     } catch (error) {
-      console.error('Get all users error:', error);
-      throw new InternalServerErrorException('Failed to fetch users.');
+      console.error('Login error:', error);
+
+      // Handle known errors based on their type or message
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message); // Re-throw the specific unauthorized message
+      }
+
+      // Handle other unexpected errors
+      throw new InternalServerErrorException(
+        'An unexpected error occurred. Please try again later.',
+      );
     }
   }
 
@@ -109,11 +148,23 @@ export class AuthResolver {
     @Context() context: { req: any },
   ): Promise<string> {
     try {
+      // Call the service to delete the user (or tutorial in your case)
       const result = await this.authService.deleteUser(id);
-      return result ? 'delete successfully' : 'delete failed'; // Assuming the service returns `true` if successful
+
+      // Return a success message if deletion is successful
+      return result ? 'User deleted successfully' : 'User deletion failed';
     } catch (error) {
-      console.error('Delete user error:', error);
-      throw new InternalServerErrorException('Failed to delete user.');
+      console.error('Error during deletion:', error);
+
+      // Handle known errors
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message);
+      }
+
+      // Handle unexpected errors
+      throw new InternalServerErrorException(
+        'An unexpected error occurred. Please try again later.',
+      );
     }
   }
 
@@ -138,9 +189,16 @@ export class AuthResolver {
       // Call the service to update the user's approval status
       return await this.authService.updateApprovalStatus(id, approveStatus);
     } catch (error) {
-      console.error('Update approval status error:', error);
+      console.error('Login error:', error);
+
+      // Handle known errors based on their type or message
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException(error.message); // Re-throw the specific unauthorized message
+      }
+
+      // Handle other unexpected errors
       throw new InternalServerErrorException(
-        'Failed to update approval status.',
+        'An unexpected error occurred. Please try again later.',
       );
     }
   }

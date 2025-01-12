@@ -28,7 +28,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET'), // Fetch secret from environment variables
         signOptions: {
-          expiresIn: '1h', // Set token expiration (optional)
+          expiresIn: '5h', // Set token expiration (optional)
         },
       }),
       inject: [ConfigService], // Inject ConfigService into the factory function

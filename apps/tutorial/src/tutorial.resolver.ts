@@ -33,14 +33,14 @@ export class TutorialResolver {
     @Args('createTutorialInput') createTutorialInput: CreateTutorialInput,
     @Context() context,
   ): Promise<Tutorial> {
-    const authHeader = context?.req?.headers['authorization'];
+    // const authHeader = context?.req?.headers['authorization'];
 
-    if (!authHeader) {
-      throw new BadRequestException('Authorization header is missing.');
-    }
+    // if (!authHeader) {
+    //   throw new BadRequestException('Authorization header is missing.');
+    // }
 
     try {
-      await this.tokenValidationService.validateToken(authHeader);
+      // await this.tokenValidationService.validateToken(authHeader);
 
       // Proceed with creating the tutorial
       return await this.tutorialService.create(createTutorialInput);

@@ -24,8 +24,6 @@ export class TokenValidationService {
         .validateToken({ token })
         .toPromise();
 
-      console.log('response', response);
-
       if (!response.isValid) {
         throw new UnauthorizedException('Invalid or expired token.');
       }

@@ -18,16 +18,22 @@ model User {
   lastName      String
   mobileNumber  String   @unique
   role          String
+  deviceID      String   @unique
   approveStatus Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @default(now())
 }
+
+
 
 model Tutorial {
   id          Int      @id @default(autoincrement())
   title       String
   image       String
   videoUrl    String
+  source      String
+  mediaType   String
+  filename    String
   description String
   date        DateTime @default(now())
   category    String

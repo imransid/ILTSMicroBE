@@ -10,8 +10,10 @@ import { TutorialResolver } from './tutorial.resolver';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { join } from 'path';
+import { Upload } from '../src/scalars/upload.scalar';
 @Module({
   imports: [
+    Upload,
     // Load environment variables from .env file
     ConfigModule.forRoot(),
 

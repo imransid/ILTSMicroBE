@@ -1,5 +1,6 @@
 import { InputType, Field } from '@nestjs/graphql';
 import { IsString, IsInt, IsOptional } from 'class-validator';
+import { Upload } from '../scalars/upload.scalar';
 
 @InputType()
 export class CreateTutorialInput {
@@ -32,4 +33,33 @@ export class CreateTutorialInput {
   @IsOptional()
   @IsInt() // Use @IsInt for integer values
   dislike?: number;
+
+  @Field(() => Upload, {
+    nullable: true,
+    description: 'Input for the profile image files.',
+  })
+  @IsOptional() // Make the image field optional
+  images?: Upload; // Make the images field nullable and optional
+
+
+  @Field()
+  @IsString()
+  @IsOptional()
+  source: string;
+
+
+  @Field()
+  @IsString()
+  @IsOptional()
+  mediaType: string;
+
+  @Field()
+  @IsString()
+  filename: string;
 }
+
+// @InputType()
+// export class CreateProfileInput {
+//   @Field(() => Upload, { description: 'Input for the profile image files.' })
+//   images: Upload;
+// }

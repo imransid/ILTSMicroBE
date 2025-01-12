@@ -7,8 +7,15 @@ async function validateTokenFromTutorial(token: string): Promise<boolean> {
   }
 
   try {
+    console.log('token', token);
+
     // Remove "Bearer " if it exists
     const withoutBearer = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+    const decodedToken = jwt.decode(withoutBearer);
+    console.log('Decoded Token:', decodedToken);
+
+    console.log('withoutBearer', withoutBearer);
 
     // Verify the token
     jwt.verify(withoutBearer, process.env.JWT_SECRET as string);

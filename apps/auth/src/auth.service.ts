@@ -50,16 +50,31 @@ export class AuthService {
     registerInput: RegisterInput,
     res: any,
   ): Promise<RegisterResponse> {
-    const { email, password, firstName, lastName, mobileNumber, role } =
-      registerInput;
+    const {
+      email,
+      password,
+      firstName,
+      lastName,
+      mobileNumber,
+      role,
+      deviceID,
+    } = registerInput;
 
     try {
       const existingUser = await this.prisma.user.findUnique({
         where: { email },
       });
 
+      const existingDevice = await this.prisma.user.findUnique({
+        where: { deviceID },
+      });
+
       if (existingUser) {
         throw new BadRequestException('Email is already registered.');
+      }
+
+      if (existingDevice) {
+        throw new BadRequestException('Device is already registered.');
       }
 
       // Hash the password using bcrypt
@@ -74,6 +89,7 @@ export class AuthService {
           lastName,
           mobileNumber,
           role,
+          deviceID,
         },
       });
 
@@ -93,7 +109,11 @@ export class AuthService {
    * @param password The user's password
    * @returns A response with a success message and JWT token
    */
-  async login(email: string, password: string): Promise<LoginResponse> {
+  async login(
+    email: string,
+    password: string,
+    deviceID: string,
+  ): Promise<LoginResponse> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
       throw new UnauthorizedException('Invalid email or password.');
@@ -107,13 +127,21 @@ export class AuthService {
 
     // Check if approval status is false
     if (!user.approveStatus) {
-      throw new UnauthorizedException('Approval is pending.');
+      throw new UnauthorizedException(
+        'Your account approval is still pending. Please wait for approval.',
+      );
+    }
+
+    if (user.deviceID !== deviceID) {
+      throw new UnauthorizedException(
+        'The current device is not authorized for this account.',
+      );
     }
 
     // Generate JWT token with the secret from JwtService configuration
     const token = this.jwtService.sign(
       { id: user.id, email: user.email, role: user.role },
-      { expiresIn: '1h' },
+      { expiresIn: '5h' },
     );
 
     return {
@@ -149,16 +177,21 @@ export class AuthService {
     return this.prisma.user.findMany();
   }
 
-  async deleteUser(id: number): Promise<boolean> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+  async deleteUser(id: number) {
+    try {
+      const result = await this.prisma.tutorial.delete({
+        where: { id },
+      });
 
-    console.log('user', user);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found.`);
+      if (result) {
+        return 'Tutorial deleted successfully';
+      } else {
+        return 'Tutorial deletion failed';
+      }
+    } catch (error) {
+      console.error('Error during tutorial deletion:', error);
+      throw new InternalServerErrorException('Failed to delete tutorial.');
     }
-
-    await this.prisma.user.delete({ where: { id } });
-    return true;
   }
 
   async getAUser(userId: number): Promise<any> {
